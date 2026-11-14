@@ -48,6 +48,36 @@ page = MetaInspector.new("https://github.com",
                          :document => "<html>...</html>")
 ```
 
+Passing a document makes no HTTP request for the page itself, so it can be
+used to parse offline archives. To make such a document verifiable you can
+declare the response it was archived from:
+
+```ruby
+page = MetaInspector.new("https://github.com/redirected-page",
+                         :document => "<html>...</html>",
+                         :final_url => "https://github.com/",
+                         :status => 200,
+                         :response_headers => { "Content-Type" => "text/html; charset=utf-8" })
+```
+
+* `final_url` is the URL the document was served from, after any redirects.
+  Relative links, images, canonicals and iframes resolve against it (and
+  against a `<base>` tag, if present). It defaults to the URL passed as the
+  first argument.
+* `status` is the archived HTTP status, exposed as `page.response.status`.
+  It defaults to `nil`.
+* `response_headers` is a hash with the archived HTTP headers, exposed as
+  `page.response.headers`. Keys are lowercased. It defaults to `{}`.
+* `content_type` is the declared content type, exposed as `page.content_type`.
+  It defaults to the `content-type` entry of `response_headers`, if any. A
+  declared non-HTML content type raises `MetaInspector::NonHtmlError`, as a
+  fetched response would, unless `allow_non_html_content` is set.
+
+These four options can only be used together with `document`. Note that image
+URLs found in a passed document are still downloaded when image downloading
+is enabled, which it is by default; pass `download_images: false` to keep a
+document fully offline.
+
 ## Accessing response
 
 You can check the status and headers from the response like this:
@@ -57,6 +87,9 @@ page.response.status  # 200
 page.response.headers # { "server"=>"nginx", "content-type"=>"text/html; charset=utf-8",
                       #   "cache-control"=>"must-revalidate, private, max-age=0", ... }
 ```
+
+When the document is passed with the `document` option, these return the
+values declared with the `status` and `response_headers` options.
 
 ## Accessing scraped data
 

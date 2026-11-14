@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+* Make documents passed with `document:` verifiable offline archives: accept `status:`, `response_headers:`, `content_type:` and `final_url:` options so `to_hash`, `response` and `content_type` work without a fetched response, resolve canonicals, images and iframes against the final URL or `<base>` tag, and reject declared non-HTML content types unless `allow_non_html_content` is set (#332).
 * Add opt-in `max_html_bytes` to reject oversized HTML before parsing (#273).
 * Add opt-in `images.with_details` to report image type and file size alongside dimensions (#268).
 * Add `iframes` to expose each iframe's original attributes, and `iframe_sources` to resolve their source URLs (#222).
